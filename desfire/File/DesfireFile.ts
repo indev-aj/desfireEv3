@@ -1,20 +1,19 @@
 import DesfireUtils from "../utils/DesfireUtils";
-import { DESFIRE_COMM_MODE, DesfireCommMode } from "../DesfireConstants";
-// test
+import { DesfireCommMode } from "../DesfireConstants";
+
 class DesfireFile {
-    private fileNumber!: number;
-    private readAccess!: boolean;
-    private writeAccess!: boolean;
-    private readWriteAccess!: boolean;
-    private changeAccess!: boolean;
+    protected fileNumber!: number;
+    protected readAccess!: boolean;
+    protected writeAccess!: boolean;
+    protected readWriteAccess!: boolean;
+    protected changeAccess!: boolean;
 
-    // not sure what type yet
-    private communicationMode!: DesfireCommMode;
-    private additionalAccessRights!: string;
-    private rfuBinary: string = "00000";
+    protected communicationMode!: DesfireCommMode;
+    protected additionalAccessRights!: string;
+    protected rfuBinary!: string;
 
-    private fileOptions!: number[];
-    private accessRights!: number[];
+    protected fileOptions!: number[];
+    protected accessRights!: number[];
 
     constructor(
         fileNumber: number,
@@ -23,6 +22,7 @@ class DesfireFile {
         readWriteAccess: boolean,
         changeAccess: boolean,
         communicationMode: string,
+        rfuBinary: string,
         additionalAccessRights: DesfireCommMode
     ) {
         this.fileNumber = fileNumber;
@@ -31,6 +31,7 @@ class DesfireFile {
         this.readWriteAccess = readWriteAccess;
         this.changeAccess = changeAccess;
         this.communicationMode = communicationMode;
+        this.rfuBinary = rfuBinary;
         this.additionalAccessRights = additionalAccessRights;
 
         this.buildFileOptions();
@@ -55,4 +56,42 @@ class DesfireFile {
 
         this.accessRights = DesfireUtils.hexStringToByte(_accessRightFirstBit).concat(DesfireUtils.hexStringToByte(_accessRightLastBit));
     }
+
+    public getReadAccess(): boolean {
+        return this.readAccess;
+    }
+
+    public getWriteAccess(): boolean {
+        return this.writeAccess;
+    }
+
+    public getReadWriteAccess(): boolean {
+        return this.readWriteAccess;
+    }
+
+    public getChangeAccess(): boolean {
+        return this.changeAccess;
+    }
+
+    public getCommunicationMode(): DesfireCommMode {
+        return this.communicationMode;
+    }
+
+    public getAdditionalAccessRights(): string {
+        return this.additionalAccessRights;
+    }
+
+    public getRfuBinary(): string {
+        return this.rfuBinary;
+    }
+
+    public getFileOptions(): number[] {
+        return this.fileOptions;
+    }
+
+    public getAccessRights(): number[] {
+        return this.accessRights;
+    }
 }
+
+export default DesfireFile;

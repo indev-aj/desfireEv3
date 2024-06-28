@@ -1,6 +1,3 @@
-import 'react-native-get-random-values';
-import CryptoJS from 'crypto-js';
-
 class DesfireUtils {
     /**
      * 
@@ -141,61 +138,6 @@ class DesfireUtils {
     static reverseHex(hex: string): string {
         return hex.match(/.{1,2}/g)?.reverse().join('') || '';
     }
-
-    // /**
-    //  * 
-    //  * @param {string} encryptedData 
-    //  * @param {string} key 
-    //  * @param {string} iv 
-    //  * @returns {string | null}
-    //  */
-    // static aesDecryptor(encryptedData: string, key: string, iv: string = "00000000000000000000000000000000"): string | null {
-    //     let decryptKey = CryptoJS.enc.Hex.parse(key);
-    //     let decryptIv = CryptoJS.enc.Hex.parse(iv);
-
-    //     try {
-    //         const decrypted = CryptoJS.AES.decrypt(
-    //             { ciphertext: CryptoJS.enc.Hex.parse(encryptedData) },
-    //             decryptKey,
-    //             { iv: decryptIv, mode: CryptoJS.mode.CBC, padding: CryptoJS.pad.NoPadding }
-    //         );
-    //         const decryptedString = decrypted.toString(CryptoJS.enc.Hex);
-
-    //         return decryptedString;
-    //     } catch (e) {
-    //         console.error("Decrypt Error: ", e);
-    //         return null;
-    //     }
-    // }
-
-    // /**
-    //  * 
-    //  * @param {string} hexString 
-    //  * @param {string} key 
-    //  * @param {string} iv 
-    //  * @returns {string | null}
-    //  */
-    // static aesEncryptor(hexString: string, key: string, iv: string = "00000000000000000000000000000000"): string | null {
-    //     key = CryptoJS.enc.Hex.parse(key);
-    //     iv = CryptoJS.enc.Hex.parse(iv);
-
-    //     try {
-    //         // console.log("IV used: ", iv.toString(CryptoJS.enc.Hex));
-    //         const hexWordArray = CryptoJS.enc.Hex.parse(hexString);
-    //         const encrypted = CryptoJS.AES.encrypt(hexWordArray, key, 
-    //             {
-    //                 iv: iv,
-    //                 mode: CryptoJS.mode.CBC,
-    //                 padding: CryptoJS.pad.NoPadding,
-    //             });
-    //         const encryptedHex = encrypted.ciphertext.toString(CryptoJS.enc.Hex);
-
-    //         return encryptedHex;
-    //     } catch (e) {
-    //         console.error("Encrypt Error: ", e);
-    //         return null;
-    //     }
-    // }
 }
 
 export default DesfireUtils;
