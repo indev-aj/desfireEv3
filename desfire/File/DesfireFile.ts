@@ -1,6 +1,6 @@
 import DesfireUtils from "../utils/DesfireUtils";
 import { DESFIRE_COMM_MODE, DesfireCommMode } from "../DesfireConstants";
-
+// test
 class DesfireFile {
     private fileNumber!: number;
     private readAccess!: boolean;
