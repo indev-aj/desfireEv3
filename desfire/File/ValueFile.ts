@@ -1,4 +1,4 @@
-import { DESFIRE_COMM_MODE, DesfireCommMode } from "../DesfireConstants";
+import { DESFIRE_COMM_MODE } from "../DesfireConstants";
 import DesfireFile from "./DesfireFile";
 import DesfireFileBuilder from "./DesfireFileBuilder";
 
@@ -15,7 +15,7 @@ class ValueFile extends DesfireFile {
         writeAccess: boolean,
         readWriteAccess: boolean,
         changeAccess: boolean,
-        communicationMode: DesfireCommMode,
+        communicationMode: DESFIRE_COMM_MODE,
         rfuBinary: string,
         additionalAccessRights: string,
         lowerLimit: number,

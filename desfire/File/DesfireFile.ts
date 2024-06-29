@@ -1,5 +1,5 @@
 import DesfireUtils from "../utils/DesfireUtils";
-import { DesfireCommMode } from "../DesfireConstants";
+import { DESFIRE_COMM_MODE } from "../DesfireConstants";
 
 class DesfireFile {
     protected fileNumber!: number;
@@ -8,7 +8,7 @@ class DesfireFile {
     protected readWriteAccess!: boolean;
     protected changeAccess!: boolean;
 
-    protected communicationMode!: DesfireCommMode;
+    protected communicationMode!: DESFIRE_COMM_MODE;
     protected additionalAccessRights!: string;
     protected rfuBinary!: string;
 
@@ -21,9 +21,9 @@ class DesfireFile {
         writeAccess: boolean,
         readWriteAccess: boolean,
         changeAccess: boolean,
-        communicationMode: string,
+        communicationMode: DESFIRE_COMM_MODE,
         rfuBinary: string,
-        additionalAccessRights: DesfireCommMode
+        additionalAccessRights: string
     ) {
         this.fileNumber = fileNumber;
         this.readAccess = readAccess;
@@ -73,7 +73,7 @@ class DesfireFile {
         return this.changeAccess;
     }
 
-    public getCommunicationMode(): DesfireCommMode {
+    public getCommunicationMode(): DESFIRE_COMM_MODE {
         return this.communicationMode;
     }
 

@@ -1,4 +1,4 @@
-import { DESFIRE_COMM_MODE, DesfireCommMode } from "../DesfireConstants";
+import { DESFIRE_COMM_MODE } from "../DesfireConstants";
 import DesfireFile from "./DesfireFile";
 
 abstract class DesfireFileBuilder<T extends DesfireFile, B extends DesfireFileBuilder<T, B>> {
@@ -7,7 +7,7 @@ abstract class DesfireFileBuilder<T extends DesfireFile, B extends DesfireFileBu
     protected writeAccess: boolean = false;
     protected readWriteAccess: boolean = false;
     protected changeAccess: boolean = false;
-    protected communicationMode: DesfireCommMode = DESFIRE_COMM_MODE.PLAIN;
+    protected communicationMode: DESFIRE_COMM_MODE = DESFIRE_COMM_MODE.PLAIN;
     protected additionalAccessRights: string = '0';
     protected rfuBinary: string = '00000';
 
@@ -36,7 +36,7 @@ abstract class DesfireFileBuilder<T extends DesfireFile, B extends DesfireFileBu
         return this as unknown as B;
     }
 
-    public withCommunicationMode(communicationMode: DesfireCommMode): B {
+    public withCommunicationMode(communicationMode: DESFIRE_COMM_MODE): B {
         this.communicationMode = communicationMode;
         return this as unknown as B;
     }
