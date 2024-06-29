@@ -2,6 +2,7 @@ import log from "../utils/logger";
 import { DESFIRE_INS, DESFIRE_STATUS } from "./DesfireConstants";
 import DesfireUtils from "./utils/DesfireUtils";
 import DesfireResponse from "./DesfireResponse";
+import DesfireAuthentication from "./Auth/DesfireAuthentication";
 
 class DesfireEV3 {
     private nfcManager: any;
@@ -10,6 +11,10 @@ class DesfireEV3 {
     private sessionAuthMac: String = "";
     private sessionAuthEnc: String = "";
 
+    authenticate = async (keyNumber: number, key: string) => {
+        await DesfireAuthentication.authenticateEV2First(keyNumber, key);
+    }
+    
     format = async () => {
         let cmd = DESFIRE_INS.FORMAT;
         let response = await DesfireResponse.sendCommand(cmd);
