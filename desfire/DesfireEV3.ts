@@ -1,20 +1,29 @@
-import { Platform } from "react-native";
 import log from "../utils/logger";
 import { DESFIRE_INS, DESFIRE_STATUS } from "./DesfireConstants";
-import { NfcManager } from 'react-native-nfc-manager';
 import DesfireUtils from "./utils/DesfireUtils";
+import DesfireResponse from "./DesfireResponse";
 
 class DesfireEV3 {
     private nfcManager: any;
+    private appId: number[] = [0x00, 0x00, 0x00];
+    private sessionKey: String = "";
+    private sessionAuthMac: String = "";
+    private sessionAuthEnc: String = "";
 
-    constructor(nfcManager: NfcManager) {
-        this.nfcManager = nfcManager;
+    format = async () => {
+        let cmd = DESFIRE_INS.FORMAT;
+        let response = await DesfireResponse.sendCommand(cmd);
+
+        let status = response.status;
+        if (status === DESFIRE_STATUS.SUCCESS) {
+            console.log("Format Successful");
+        }
     }
 
     selectApplication = async (aid = [0x00, 0x00, 0x00]) => {
         let cmd = DESFIRE_INS.SELECT_APPLICATION;
 
-        const response = await this.sendCommand(cmd, aid);
+        const response = await DesfireResponse.sendCommand(cmd, aid);
         const status = response.status;
 
         if (status === DESFIRE_STATUS.SUCCESS) {
@@ -24,92 +33,19 @@ class DesfireEV3 {
 
     getUid = async () => {
         let cmd = DESFIRE_INS.GET_UID;
-        let response = await this.sendCommand(cmd);
+        let response = await DesfireResponse.sendCommand(cmd);
         log.info(response);
 
         cmd = DESFIRE_INS.ADDITIONAL_FRAME;
 
-        response = await this.sendCommand(cmd);        
-        response = await this.sendCommand(cmd);
+        response = await DesfireResponse.sendCommand(cmd);        
+        response = await DesfireResponse.sendCommand(cmd);
 
         let cardUid = response.data.slice(0, 14);
         cardUid = ("0x").concat(cardUid);
 
         return cardUid;
     }
-
-    sendCommand = async (command: DESFIRE_INS, data?: number[]): Promise<CommandResponse> => {
-        let status: DESFIRE_STATUS = DESFIRE_STATUS.COMMAND_ABORTED;
-        let result: string = "";
-
-        if (Platform.OS === "ios") {
-
-        } else {
-            let instruction = DesfireUtils.intToHexArrayLSB(command, 1);
-        
-            instruction = data ? instruction.concat(data) : instruction;
-
-            await this.nfcManager.transceive(instruction).then((response: any) => {
-                const decimalArray = response;
-                
-                status = decimalArray[0];
-                decimalArray.shift();
-                result = DesfireUtils.getHexFromDecArray(decimalArray);
-            })
-        }
-
-        // Construct the CommandResponse object
-        const response: CommandResponse = {
-            status,
-            data: result,
-        };
-
-        // Log status based on DESFIRE_STATUS
-        switch (status as DESFIRE_STATUS) {
-            case DESFIRE_STATUS.SUCCESS:
-                log.title("Operation Success");
-                break;
-            case DESFIRE_STATUS.ADDITIONAL_FRAME:
-                log.title("Additional Frame");
-                break;
-            case DESFIRE_STATUS.AUTHENTICATION_ERROR:
-                log.error("Authentication Error");
-                break;
-            case DESFIRE_STATUS.COMMAND_ABORTED:
-                log.error("Command Aborted");
-                break;
-            case DESFIRE_STATUS.DUPLICATE_ERROR:
-                log.error("Duplicate Error");
-                break;
-            case DESFIRE_STATUS.INTEGRITY_ERROR:
-                log.error("Integrity Error");
-                break;
-            case DESFIRE_STATUS.LENGTH_ERROR:
-                log.error("Length Error");
-                break;
-            case DESFIRE_STATUS.MEMORY_ERROR:
-                log.error("Memory Error");
-                break;
-            case DESFIRE_STATUS.OUT_OF_MEMORY:
-                log.error("Out of Memory Error");
-                break;
-            case DESFIRE_STATUS.PARAMETER_ERROR:
-                log.error("Parameter Error");
-                break;
-            case DESFIRE_STATUS.PERMISSION_DENIED:
-                log.error("Permission Denied");
-                break;
-            default:
-                break;
-        }
-
-        return response;
-    };
 }
-
-type CommandResponse = {
-    status: DESFIRE_STATUS;
-    data: string,
-};
 
 export default DesfireEV3;

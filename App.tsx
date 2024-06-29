@@ -32,7 +32,7 @@ import DesfireEV3 from './desfire/DesfireEV3';
 
 // Pre-step, call this before any NFC operations
 NfcManager.start();
-const desfire = new DesfireEV3(NfcManager);
+const desfire = new DesfireEV3();
 
 async function readNdef() {
     console.log("Calling library")
@@ -42,6 +42,7 @@ async function readNdef() {
         // log.info('Tag found', tag);
 
         await desfire.selectApplication();
+        await desfire.format();
     } catch (e) {
         log.error('Oops!', e);
     } finally {
