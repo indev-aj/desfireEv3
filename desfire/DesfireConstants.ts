@@ -13,6 +13,7 @@ export enum DESFIRE_STATUS {
 };
 
 export enum DESFIRE_INS {
+    ADDITIONAL_FRAME = 0xAF,
     COMMIT = 0xC7,
     CREDIT = 0x0C,
     DEBIT = 0xDC,

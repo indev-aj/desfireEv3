@@ -13,6 +13,7 @@ import {
     StatusBar,
     StyleSheet,
     Text,
+    TouchableOpacity,
     useColorScheme,
     View,
 } from 'react-native';
@@ -24,6 +25,30 @@ import {
     LearnMoreLinks,
     ReloadInstructions,
 } from 'react-native/Libraries/NewAppScreen';
+
+import NfcManager, {NfcTech} from 'react-native-nfc-manager';
+import log from './utils/logger';
+import DesfireEV3 from './desfire/DesfireEV3';
+
+// Pre-step, call this before any NFC operations
+NfcManager.start();
+const desfire = new DesfireEV3(NfcManager);
+
+async function readNdef() {
+    try {
+        await NfcManager.requestTechnology(NfcTech.IsoDep);
+
+        const tag = await NfcManager.getTag();
+        log.info('Tag found', tag);
+
+        let id = desfire.getUid();
+        log.info(id);
+    } catch (e) {
+        log.error('Oops!', e);
+    } finally {
+        NfcManager.cancelTechnologyRequest();
+    }
+}
 
 type SectionProps = PropsWithChildren<{
     title: string;
@@ -80,16 +105,9 @@ function App(): React.JSX.Element {
                         Edit <Text style={styles.highlight}>App.tsx</Text> to change this
                         screen and then come back to see your edits.
                     </Section>
-                    <Section title="See Your Changes">
-                        <ReloadInstructions />
-                    </Section>
-                    <Section title="Debug">
-                        <DebugInstructions />
-                    </Section>
-                    <Section title="Learn More">
-                        Read the docs to discover what to do next:
-                    </Section>
-                    <LearnMoreLinks />
+                    <TouchableOpacity onPress={readNdef} style={styles.sectionContainer} >
+                        <Text style={styles.sectionDescription}>Scan a Tag</Text>
+                    </TouchableOpacity>
                 </View>
             </ScrollView>
         </SafeAreaView>
