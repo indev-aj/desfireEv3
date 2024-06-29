@@ -11,16 +11,28 @@ class DesfireEV3 {
         this.nfcManager = nfcManager;
     }
 
+    selectApplication = async (aid = [0x00, 0x00, 0x00]) => {
+        let cmd = DESFIRE_INS.SELECT_APPLICATION;
+
+        const response = await this.sendCommand(cmd, aid);
+        const status = response.status;
+
+        if (status === DESFIRE_STATUS.SUCCESS) {
+            console.log("Application Successfully Selected with AID: ", aid);
+        }
+    }
+
     getUid = async () => {
         let cmd = DESFIRE_INS.GET_UID;
         let response = await this.sendCommand(cmd);
-        
+        log.info(response);
+
         cmd = DESFIRE_INS.ADDITIONAL_FRAME;
 
-        response = await this.sendCommand(cmd);
+        response = await this.sendCommand(cmd);        
         response = await this.sendCommand(cmd);
 
-        let cardUid = response.data.substr(0, 14);
+        let cardUid = response.data.slice(0, 14);
         cardUid = ("0x").concat(cardUid);
 
         return cardUid;

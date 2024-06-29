@@ -35,14 +35,13 @@ NfcManager.start();
 const desfire = new DesfireEV3(NfcManager);
 
 async function readNdef() {
+    console.log("Calling library")
     try {
         await NfcManager.requestTechnology(NfcTech.IsoDep);
+        // const tag = await NfcManager.getTag();
+        // log.info('Tag found', tag);
 
-        const tag = await NfcManager.getTag();
-        log.info('Tag found', tag);
-
-        let id = desfire.getUid();
-        log.info(id);
+        await desfire.selectApplication();
     } catch (e) {
         log.error('Oops!', e);
     } finally {
