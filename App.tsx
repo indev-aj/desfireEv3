@@ -44,6 +44,7 @@ async function readNdef() {
         await desfire.selectApplication();
         await desfire.authenticate(0, "00000000000000000000000000000000");
         await desfire.format();
+        await desfire.createApplication();
     } catch (e) {
         log.error('Oops!', e);
     } finally {

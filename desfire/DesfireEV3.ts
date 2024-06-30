@@ -6,7 +6,7 @@ import DesfireAuthentication from "./Auth/DesfireAuthentication";
 
 class DesfireEV3 {
     private nfcManager: any;
-    private appId: number[] = [0x00, 0x00, 0x00];
+    private appId: number[] = [0x12, 0x00, 0x00];
     private sessionKey: String = "";
     private sessionAuthMac: String = "";
     private sessionAuthEnc: String = "";
@@ -31,6 +31,20 @@ class DesfireEV3 {
         let status = response.status;
         if (status === DESFIRE_STATUS.SUCCESS) {
             console.log("Format Successful");
+        }
+    }
+
+    createApplication = async (appId: number[] = this.appId) => {
+        log.title("Create Application");
+        let cmd = DESFIRE_INS.CREATE_APPLICATION;
+        const param = [0x09, 0x81];
+        const options = appId.concat(param);
+
+        let response = await DesfireResponse.sendCommand(cmd, options);
+        const status = response.status;
+
+        if (status == DESFIRE_STATUS.SUCCESS) {
+            console.log("Application Created Successfully");
         }
     }
 
