@@ -42,7 +42,7 @@ async function readNdef() {
         // log.info('Tag found', tag);
 
         await desfire.selectApplication();
-        await desfire.format();
+        await desfire.authenticate(0, "00000000000000000000000000000000");
     } catch (e) {
         log.error('Oops!', e);
     } finally {

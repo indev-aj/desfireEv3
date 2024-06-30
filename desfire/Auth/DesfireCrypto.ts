@@ -47,12 +47,60 @@ class DesfireCrypto {
         }
     }
 
+    static TDESDecryptor = (encryptedData: string, key: string, iv: string = "00000000") => {
+        let _key = CryptoJS.enc.Hex.parse(key);
+        let _iv = CryptoJS.enc.Hex.parse(iv);
+        let data = CryptoJS.enc.Hex.parse(encryptedData);
+
+        const cipherParams = CryptoJS.lib.CipherParams.create({
+            ciphertext: data
+        });
+
+        try {
+            const decrypted = CryptoJS.TripleDES.decrypt(
+                cipherParams,
+                _key,
+                { iv: _iv, mode: CryptoJS.mode.CBC, padding: CryptoJS.pad.NoPadding }
+            );
+
+            const decryptedString = decrypted.toString(CryptoJS.enc.Hex);
+            return decryptedString;
+        } catch (e) {
+            console.error("Decrypt Error: ", e);
+            return null;
+        }
+    }
+
+    static TDESEncryptor = (msg: string, key: string, iv: string = "00000000") => {
+        let _key = CryptoJS.enc.Hex.parse(key);
+        let _iv = CryptoJS.enc.Hex.parse(iv);
+
+        try {
+            const hexWordArray = CryptoJS.enc.Hex.parse(msg);
+            const encrypted = CryptoJS.TripleDES.encrypt(hexWordArray, _key, 
+                {
+                    iv: _iv,
+                    mode: CryptoJS.mode.CBC,
+                    padding: CryptoJS.pad.NoPadding,
+                });
+            const encryptedHex = encrypted.ciphertext.toString(CryptoJS.enc.Hex);
+            return encryptedHex;
+        } catch (e) {
+            console.error("Decrypt Error: ", e);
+            return null;
+        }
+    }
+
+    static generateRandomHexString = (length: number) => {
+        return CryptoJS.lib.WordArray.random(length).toString(CryptoJS.enc.Hex);
+    }
+
     static example() {
         /*
             Encrypted: 24677DDBD46349E623798FD729006E79
             Decrypted: FA659AD0DCA738DD65DC7DC38612AD81
         */
-       
+
         let encrypted = "24677DDBD46349E623798FD729006E79";
         let data = this.AESDecryptor(encrypted, "00000000000000000000000000000000");
         console.log("data: ",data);

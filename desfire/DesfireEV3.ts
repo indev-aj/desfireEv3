@@ -12,7 +12,7 @@ class DesfireEV3 {
     private sessionAuthEnc: String = "";
 
     authenticate = async (keyNumber: number, key: string) => {
-        await DesfireAuthentication.authenticateEV2First(keyNumber, key);
+        await DesfireAuthentication.authenticateLegacy(keyNumber, key);
     }
     
     format = async () => {
