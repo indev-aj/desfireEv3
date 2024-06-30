@@ -12,10 +12,19 @@ class DesfireEV3 {
     private sessionAuthEnc: String = "";
 
     authenticate = async (keyNumber: number, key: string) => {
-        await DesfireAuthentication.authenticateLegacy(keyNumber, key);
+        log.title("Authenticate");
+        let isAuth = await DesfireAuthentication.authenticateLegacy(keyNumber, key);
+
+        if (isAuth) {
+            this.sessionKey = DesfireAuthentication.getSessionKey;
+            log.title("Session Key: ", this.sessionKey);
+        } else {
+            log.error("Authentication Failed");
+        }
     }
     
     format = async () => {
+        log.title("Format");
         let cmd = DESFIRE_INS.FORMAT;
         let response = await DesfireResponse.sendCommand(cmd);
 
