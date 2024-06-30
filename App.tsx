@@ -29,6 +29,7 @@ import {
 import NfcManager, {NfcTech} from 'react-native-nfc-manager';
 import log from './utils/logger';
 import DesfireEV3 from './desfire/DesfireEV3';
+import { DESFIRE_AUTH_TYPE } from './desfire/DesfireConstants';
 
 // Pre-step, call this before any NFC operations
 NfcManager.start();
@@ -42,9 +43,12 @@ async function readNdef() {
         // log.info('Tag found', tag);
 
         await desfire.selectApplication();
-        await desfire.authenticate(0, "00000000000000000000000000000000");
+        await desfire.authenticate(0, DESFIRE_AUTH_TYPE.DES, "0000000000000000");
         await desfire.format();
         await desfire.createApplication();
+        await desfire.selectApplication([0x12, 0x0, 0x0]);
+        await desfire.authenticate(0, DESFIRE_AUTH_TYPE.AES, "00000000000000000000000000000000");
+        
     } catch (e) {
         log.error('Oops!', e);
     } finally {

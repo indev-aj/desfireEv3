@@ -1,5 +1,5 @@
 import log from "../utils/logger";
-import { DESFIRE_INS, DESFIRE_STATUS } from "./DesfireConstants";
+import { DESFIRE_AUTH_TYPE, DESFIRE_INS, DESFIRE_STATUS } from "./DesfireConstants";
 import DesfireUtils from "./utils/DesfireUtils";
 import DesfireResponse from "./DesfireResponse";
 import DesfireAuthentication from "./Auth/DesfireAuthentication";
@@ -11,9 +11,11 @@ class DesfireEV3 {
     private sessionAuthMac: String = "";
     private sessionAuthEnc: String = "";
 
-    authenticate = async (keyNumber: number, key: string) => {
+    authenticate = async (keyNumber: number, authType: DESFIRE_AUTH_TYPE, key: string) => {
         log.title("Authenticate");
-        let isAuth = await DesfireAuthentication.authenticateLegacy(keyNumber, key);
+        let isAuth = authType === DESFIRE_AUTH_TYPE.DES ?
+            await DesfireAuthentication.authenticateLegacy(keyNumber, key) :
+            await DesfireAuthentication.authenticateAES(keyNumber, key);
 
         if (isAuth) {
             this.sessionKey = DesfireAuthentication.getSessionKey;

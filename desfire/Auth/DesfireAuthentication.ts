@@ -112,9 +112,7 @@ class DesfireAuthentication {
         let _keyNumber = DesfireUtils.intToHexArrayLSB(keyNumber, 1);
 
         let response = await DesfireResponse.sendCommand(cmd, _keyNumber);
-        log.info("Auth Response: ", response);
         
-        /*
         let randB_enc = response.data;
         log.info("RandB Enc: ", randB_enc);
 
@@ -125,12 +123,12 @@ class DesfireAuthentication {
         log.info("RandB Rotate: ", randB_rotate);
 
         // Generate random 16-byte RndA
-        const randA = "112233445566778899AABBCCDDEEFFGG";
+        const randA = DesfireCrypto.generateRandomHexString(16);
         log.info("RandA: ", randA);
 
         let randAB = randA.concat(randB_rotate);
 
-        let iv = CryptoJS.enc.Hex.parse(randB_enc).toString();
+        let iv = randB_enc;
         let randAB_enc = DesfireCrypto.AESEncryptor(randAB, key, iv);
 
         let dataToSend = DesfireUtils.hexStringToByte(randAB_enc!);
@@ -138,8 +136,46 @@ class DesfireAuthentication {
         cmd = DESFIRE_INS.ADDITIONAL_FRAME;
         response = await DesfireResponse.sendCommand(cmd, dataToSend);
 
-        log.info("Auth Response: ", response);
-        */
+        if (response.status != DESFIRE_STATUS.SUCCESS) {
+            log.error("Wrong RandB'");
+            return false;
+        }
+
+        let newRandA_enc = response.data;
+        iv = randAB_enc!.slice(-32);
+
+        // decrypt new rand a
+        let newRandA = DesfireCrypto.AESDecryptor(newRandA_enc, key, iv);
+
+        // rotate right
+        let newRandA_rotate = DesfireUtils.rotateRight(newRandA!);
+
+        if (newRandA_rotate.toUpperCase() !== randA.toUpperCase()) {
+            log.info("RandA' is not identical to original RandA. Authentication failed!\n");
+            return false;
+        }
+
+        let sessionKeyArray: number[] = new Array(16).fill(0);
+        const randABytes = DesfireUtils.hexStringToByte(randA!);
+        const randBBytes = DesfireUtils.hexStringToByte(randB!);
+
+        sessionKeyArray.splice(0, 4, ...randABytes.slice(0, 4));
+
+        // Copy the first 4 bytes of randB to the session key
+        sessionKeyArray.splice(4, 4, ...randBBytes.slice(0, 4));
+
+        // Copy the last 4 bytes of randA to the session key
+        sessionKeyArray.splice(8, 4, ...randABytes.slice(12, 16));
+
+        // Copy the last 4 bytes of randB to the session key
+        sessionKeyArray.splice(12, 4, ...randBBytes.slice(12, 16));
+
+        DesfireAuthentication.sessionKey = sessionKeyArray.map(byte => 
+            byte.toString(16).padStart(2, '0')).join('');
+        
+        log.title("Authentication successful!");
+
+        return true;
     }
     
     static authenticateEV2First = async (keyNumber: number, key: string) => {

@@ -36,7 +36,7 @@ export enum DESFIRE_INS {
     CHANGE_KEY = 0xC4,
 }
 
-enum DESFIRE_AUTH_TYPE {
+export enum DESFIRE_AUTH_TYPE {
     AES = "AES",
     DES = "DES",
 }
