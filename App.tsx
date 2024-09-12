@@ -25,11 +25,12 @@ import {
     LearnMoreLinks,
     ReloadInstructions,
 } from 'react-native/Libraries/NewAppScreen';
-
+ 
 import NfcManager, {NfcTech} from 'react-native-nfc-manager';
 import log from './utils/logger';
 import DesfireEV3 from './desfire/DesfireEV3';
-import { DESFIRE_AUTH_TYPE } from './desfire/DesfireConstants';
+import { DESFIRE_AUTH_TYPE, DESFIRE_COMM_MODE } from './desfire/DesfireConstants';
+import { ValueFileBuilder } from './desfire/File/ValueFile';
 
 // Pre-step, call this before any NFC operations
 NfcManager.start();
@@ -39,8 +40,6 @@ async function readNdef() {
     console.log("Calling library")
     try {
         await NfcManager.requestTechnology(NfcTech.IsoDep);
-        // const tag = await NfcManager.getTag();
-        // log.info('Tag found', tag);
 
         await desfire.selectApplication();
         await desfire.authenticate(0, DESFIRE_AUTH_TYPE.DES, "0000000000000000");
@@ -49,6 +48,21 @@ async function readNdef() {
         await desfire.selectApplication([0x12, 0x0, 0x0]);
         await desfire.authenticate(0, DESFIRE_AUTH_TYPE.AES, "00000000000000000000000000000000");
         
+        // create value file
+        const valueFile = new ValueFileBuilder()
+            .withFileNumber(1)
+            .withReadAccess(true)
+            .withWriteAccess(false)
+            .withCommunicationMode(DESFIRE_COMM_MODE.PLAIN)
+            .withLowerLimit(0)
+            .withUpperLimit(1000)
+            .withValue(500)
+            .withLimitedCreditEnabled(true)
+            .withFreeGetValue(false)
+            .build();
+
+        await desfire.createValueFile(valueFile);
+
     } catch (e) {
         log.error('Oops!', e);
     } finally {

@@ -3,6 +3,7 @@ import { DESFIRE_AUTH_TYPE, DESFIRE_INS, DESFIRE_STATUS } from "./DesfireConstan
 import DesfireUtils from "./utils/DesfireUtils";
 import DesfireResponse from "./DesfireResponse";
 import DesfireAuthentication from "./Auth/DesfireAuthentication";
+import { ValueFile } from "./File/ValueFile";
 
 class DesfireEV3 {
     private nfcManager: any;
@@ -48,6 +49,56 @@ class DesfireEV3 {
         if (status == DESFIRE_STATUS.SUCCESS) {
             console.log("Application Created Successfully");
         }
+    }
+
+    /*
+    {
+        "fileNumber": 1,
+        "readAccess": true,
+        "writeAccess": false,
+        "readWriteAccess": false,
+        "changeAccess": false,
+        "communicationMode": "00",
+        "rfuBinary": "00000",
+        "additionalAccessRights": "0",
+        "fileOptions": [
+            0
+        ],
+        "accessRights": [
+            0,
+            16
+        ],
+        "lowerLimit": 0,
+        "upperLimit": 1000,
+        "value": 500,
+        "limitedCreditEnabled": true,
+        "freeGetValue": false
+    }
+  */
+    createValueFile = async (file: ValueFile) => {
+        log.title("Create Value File");
+        let cmd = DESFIRE_INS.CREATE_VALUE_FILE;
+
+        let _fileNo = DesfireUtils.intToHexArrayLSB(file['fileNumber'], 1);
+        let _lowerLimit = DesfireUtils.intToHexArrayLSB(file["lowerLimit"], 4);
+        let _upperLimit = DesfireUtils.intToHexArrayLSB(file["upperLimit"], 4);
+        let _value = DesfireUtils.intToHexArrayLSB(file["value"], 4);
+
+        let _limitedCreditValueEnabled = file["limitedCreditEnabled"] ? '1' : '0';
+        let _getFreeValue = file["freeGetValue"] ? '1' : '0';
+
+        const limitedRfuBinary = file["rfuBinary"];
+        let limitedCreditString = limitedRfuBinary.concat(_getFreeValue).concat(_limitedCreditValueEnabled);
+        let limitedCreditBinary = parseInt(limitedCreditString, 2);
+        let _limitedCredit = DesfireUtils.intToHexArrayLSB(limitedCreditBinary, 1);
+
+        let options = _fileNo.concat(file["fileOptions"]).concat(file["accessRights"])
+                            .concat(_lowerLimit).concat(_upperLimit).concat(_value).concat(_limitedCredit);
+
+        let response = await DesfireResponse.sendCommand(cmd, options);
+        const status = response.status;
+
+        // TODO: Parameter Error
     }
 
     selectApplication = async (aid = [0x00, 0x00, 0x00]) => {
